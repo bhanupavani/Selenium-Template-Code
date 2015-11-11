@@ -3,7 +3,7 @@ package com.selnm;
 	import org.openqa.selenium.WebDriver;
 	import org.openqa.selenium.firefox.FirefoxDriver;
 
-	public class Actions {
+	public class MyActions {
 		WebDriver obj;
 
 		public void openBrowser(String l, String d, String c) {
