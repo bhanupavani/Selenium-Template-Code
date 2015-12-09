@@ -5,23 +5,32 @@ import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.os.WindowsUtils;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import junit.framework.Assert;
 
@@ -237,9 +246,83 @@ public class code {
 		}
 	}
 
-	public void PageLoadedOrNot() {
+	public void pageLoadedOrNot() {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		String name = (String) js.executeScript("alert(document.readtstate");
 		System.out.println(name);
+	}
+
+	public void windowHandles() {
+		Set<String> ids = driver.getWindowHandles();
+		Iterator<String> it = ids.iterator();
+		String parentid = it.next();
+		String childid = it.next();
+
+		driver.switchTo().window(childid);
+		System.out.println(driver.getTitle());
+		// switch back to parent window
+		driver.switchTo().window(parentid);
+	}
+
+	public void moveMousePointer() {
+		// move mouse pointer to sign-in option in amazon site
+		Actions a = new Actions(driver);
+		WebElement element = driver
+				.findElement(By
+						.xpath("/html/body/div[2]/header/div/div[3]/div[2]/div/a[1]/span[1]"));
+		a.moveToElement(element).build().perform();
+		// move mouse pointer to edit box and enter text in capital letters
+		WebElement textelement = driver.findElement(By.name("field-keywords"));
+		a.keyDown(Keys.SHIFT).moveToElement(textelement).click()
+				.sendKeys("small letters").build().perform();
+		// perform right click
+		a.contextClick(textelement).build().perform();
+	}
+
+	public void frame() {
+		System.out.println(driver.getPageSource()); // frame is iframe or
+													// framesetup
+		driver.switchTo().frame(1);
+		driver.findElement(By.cssSelector("input[class='input_password']"))
+				.sendKeys("10000");
+		driver.switchTo().defaultContent();
+	}
+
+	public void waitForSuggestions() {
+		driver.manage().window().maximize();
+		driver.findElement(By.xpath("//input[@id='m_rtxtEmail1']")).sendKeys(
+				"a");
+		WebDriverWait wt = new WebDriverWait(driver, 5); // explicit wait
+		wt.until(ExpectedConditions.visibilityOfElementLocated(By
+				.xpath(".//*[@id='m_frmRegister']/div[1]/ul")));// give xpath of
+																// suggestions
+																// box
+		driver.findElement(
+				By.xpath(".//*[@id='m_frmRegister']/div[1]/ul/li[6]/p"))
+				.click();// give xpath of required option (from suggestion box)
+
+	}
+	public void handleHTTPSCertification(){
+		FirefoxProfile prf=new FirefoxProfile();
+		prf.setAcceptUntrustedCertificates(false);
+		WebDriver driver=new FirefoxDriver(prf);//for ie and chrome selenium accepts untrusted certifications automatically(inbuit in .exe file by default)
+		driver.get("http://www.ebay.com/");
+	}
+	public void explicitWait(){
+		WebDriverWait wait=new WebDriverWait(driver, 5000);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@class='dfsdf']")));
+	}
+	public void firefoxbinaryError(){
+		FirefoxBinary ffbinary=new FirefoxBinary("ffpath");
+		FirefoxProfile ffprofile=new FirefoxProfile();
+		driver=new FirefoxDriver(ffbinary,ffprofile);
+		}
+	public void killingProcess(){
+		WindowsUtils.tryToKillByName("notepad.exe");//("excel.exe")
+	}
+	public void getCookies(){
+		Set<Cookie> cookies = driver.manage().getCookies();
+		System.out.println(cookies.size());
+		driver.manage().deleteAllCookies();
 	}
 }
